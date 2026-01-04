@@ -34,7 +34,9 @@ const walletConnectAdapter = new WalletConnectAdapter({
       url: 'https://feeless.vip',
       icons: ['https://feeless.vip/favicon.ico']
     }
-  }
+  },
+  // Show wallet list on mobile instead of QR code only
+  allWallets: 'SHOW'
 });
 
 // Conditional loading: Ledger only on browsers with WebHID support (Chrome/Edge)
