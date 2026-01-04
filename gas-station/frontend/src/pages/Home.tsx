@@ -211,7 +211,9 @@ export function Home() {
 
         {/* Footer */}
         <p className="text-xs text-gray-500 text-center">
-          Connect via WalletConnect (TrustWallet, Ledger Live, etc.)
+          {typeof navigator !== 'undefined' && 'hid' in navigator
+            ? 'Connect Ledger directly or via WalletConnect'
+            : 'Connect via WalletConnect (Ledger Live, TrustWallet)'}
         </p>
       </div>
     </div>

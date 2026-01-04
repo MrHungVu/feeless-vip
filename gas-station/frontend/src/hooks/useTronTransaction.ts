@@ -59,6 +59,22 @@ export async function getTrxBalance(address: string): Promise<string> {
 // Error message handler for wallet errors
 export function handleWalletError(error: unknown): string {
   if (error instanceof Error) {
+    // Ledger: TRON app not open
+    if (error.message.includes('0x6e01') || error.message.includes('CLA_NOT_SUPPORTED')) {
+      return 'Open TRON app on your Ledger device.';
+    }
+    // Ledger: Device locked
+    if (error.message.includes('0x6b0c') || error.message.includes('DEVICE_LOCKED')) {
+      return 'Unlock your Ledger device.';
+    }
+    // Ledger: User rejected on device
+    if (error.message.includes('0x6985') || error.message.includes('CONDITIONS_NOT_SATISFIED')) {
+      return 'Transaction rejected on Ledger device.';
+    }
+    // WebHID not supported
+    if (error.message.includes('hid') || error.message.includes('WebHID')) {
+      return 'Ledger direct connection not supported. Use WalletConnect.';
+    }
     // Session expired
     if (error.message.includes('No matching key')) {
       return 'Session expired. Please reconnect your wallet.';
