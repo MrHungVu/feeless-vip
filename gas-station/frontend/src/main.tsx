@@ -19,9 +19,21 @@ const solanaEndpoint = import.meta.env.VITE_SOLANA_RPC_URL || 'https://api.mainn
 const solanaWallets = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
 
 // Ledger only for now (testing)
-const tronAdapters = [
-  new LedgerAdapter()
-];
+// Create adapter and attach error handler to auto-disconnect on error
+const ledgerAdapter = new LedgerAdapter();
+
+// Listen for errors and reset adapter state
+ledgerAdapter.on('error', (error) => {
+  console.log('[LedgerAdapter] Error:', error);
+  // Disconnect to reset state so user can try again
+  ledgerAdapter.disconnect().catch(() => {});
+});
+
+ledgerAdapter.on('stateChanged', (state) => {
+  console.log('[LedgerAdapter] State changed:', state);
+});
+
+const tronAdapters = [ledgerAdapter];
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
