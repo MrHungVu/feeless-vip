@@ -12,33 +12,15 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 // TRON
 import { WalletProvider as TronWalletProvider } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { WalletModalProvider as TronModalProvider } from '@tronweb3/tronwallet-adapter-react-ui';
-import { TronLinkAdapter, LedgerAdapter } from '@tronweb3/tronwallet-adapters';
-import { WalletConnectAdapter } from '@tronweb3/tronwallet-adapter-walletconnect';
+import { LedgerAdapter } from '@tronweb3/tronwallet-adapters';
 import '@tronweb3/tronwallet-adapter-react-ui/style.css';
 
 const solanaEndpoint = import.meta.env.VITE_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
 const solanaWallets = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
 
-// TronLink for browser extension
-// WalletConnect for Ledger, TrustWallet, TokenPocket, etc.
-const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
-
+// Ledger only for now (testing)
 const tronAdapters = [
-  new TronLinkAdapter(),
-  new LedgerAdapter(),
-  ...(WALLETCONNECT_PROJECT_ID ? [new WalletConnectAdapter({
-    network: 'Mainnet',
-    options: {
-      relayUrl: 'wss://relay.walletconnect.com',
-      projectId: WALLETCONNECT_PROJECT_ID,
-      metadata: {
-        name: 'Feeless Gas Station',
-        description: 'Get TRX without gas fees',
-        url: 'https://frontend-production-f263.up.railway.app',
-        icons: ['https://frontend-production-f263.up.railway.app/logo.png']
-      }
-    }
-  })] : [])
+  new LedgerAdapter()
 ];
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
