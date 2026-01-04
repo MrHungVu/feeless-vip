@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
 import { useWallet as useTronWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
+import { useWalletModal } from '@tronweb3/tronwallet-adapter-react-ui';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { WalletActionButton } from '@tronweb3/tronwallet-adapter-react-ui';
 import { useSolanaTopUp } from '../hooks/use-solana-topup';
 import { useTronTopUp } from '../hooks/use-tron-topup';
 import { TransactionStatus } from './TransactionStatus';
@@ -15,6 +15,7 @@ export function TopUpForm({ chain }: Props) {
   const [amount, setAmount] = useState('10');
   const solanaWallet = useSolanaWallet();
   const tronWallet = useTronWallet();
+  const { setVisible } = useWalletModal();
 
   const solanaTopUp = useSolanaTopUp();
   const tronTopUp = useTronTopUp();
@@ -24,6 +25,19 @@ export function TopUpForm({ chain }: Props) {
     chain === 'solana' ? solanaWallet.connected : tronWallet.connected;
   const stablecoin = chain === 'solana' ? 'USDC' : 'USDT';
   const nativeToken = chain === 'solana' ? 'SOL' : 'TRX';
+
+  // Custom TRON connect button that properly resets modal state
+  const handleTronConnect = () => {
+    setVisible(true);
+  };
+
+  const handleTronDisconnect = async () => {
+    try {
+      await tronWallet.disconnect();
+    } catch (e) {
+      console.error('Disconnect error:', e);
+    }
+  };
 
   // Debounced quote fetch
   useEffect(() => {
@@ -57,7 +71,23 @@ export function TopUpForm({ chain }: Props) {
     <div className="space-y-6">
       {/* Wallet Connect */}
       <div className="flex justify-center">
-        {chain === 'solana' ? <WalletMultiButton /> : <WalletActionButton />}
+        {chain === 'solana' ? (
+          <WalletMultiButton />
+        ) : tronWallet.connected ? (
+          <button
+            onClick={handleTronDisconnect}
+            className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700"
+          >
+            Disconnect ({tronWallet.address?.slice(0, 6)}...{tronWallet.address?.slice(-4)})
+          </button>
+        ) : (
+          <button
+            onClick={handleTronConnect}
+            className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700"
+          >
+            Connect TRON Wallet
+          </button>
+        )}
       </div>
 
       {isConnected && (
