@@ -23,7 +23,8 @@ COPY shared/package*.json ./shared/
 RUN npm ci --legacy-peer-deps
 COPY . .
 ENV NODE_OPTIONS="--max-old-space-size=8192"
-RUN npm run build -w shared && npm run build -w frontend
+# Echo VITE_API_URL to ensure ARG is used (busts cache if value changes)
+RUN echo "Building with VITE_API_URL=${VITE_API_URL}" && npm run build -w shared && npm run build -w frontend
 
 FROM nginx:alpine
 COPY --from=builder /app/frontend/dist /usr/share/nginx/html
