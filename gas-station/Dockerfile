@@ -4,7 +4,7 @@ COPY package*.json ./
 COPY backend/package*.json ./backend/
 COPY frontend/package*.json ./frontend/
 COPY shared/package*.json ./shared/
-RUN npm install
+RUN npm ci --legacy-peer-deps
 COPY . .
 RUN npm run build
 EXPOSE 3001
