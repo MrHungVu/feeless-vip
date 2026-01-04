@@ -28,6 +28,41 @@ When running Python scripts from `.claude/skills/`, use the venv Python interpre
 
 This ensures packages installed by `install.sh` (google-genai, pypdf, etc.) are available.
 
+## Railway Deployment
+
+Railway API token is stored in `.claude/secrets/railway-token`. Use it to check/manage deployments:
+
+```bash
+# Get token
+RAILWAY_TOKEN=$(cat .claude/secrets/railway-token)
+
+# Query deployments
+curl -s -X POST https://backboard.railway.app/graphql/v2 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $RAILWAY_TOKEN" \
+  -d '{"query": "query { deployments(first: 1, input: { serviceId: \"SERVICE_ID\" }) { edges { node { id status } } } }"}'
+
+# Get build logs for failed deployment
+curl -s -X POST https://backboard.railway.app/graphql/v2 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $RAILWAY_TOKEN" \
+  -d '{"query": "query { buildLogs(deploymentId: \"DEPLOYMENT_ID\", limit: 100) { message } }"}'
+
+# Trigger deployment
+curl -s -X POST https://backboard.railway.app/graphql/v2 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $RAILWAY_TOKEN" \
+  -d '{"query": "mutation { serviceInstanceDeploy(serviceId: \"SERVICE_ID\", environmentId: \"ENV_ID\", latestCommit: true) }"}'
+```
+
+**Project IDs:**
+- Project: `17d4bdea-5e9c-4823-8257-23f222974ab5`
+- Environment (production): `44b97ab6-0ba3-42e8-b660-05645d25f345`
+- Backend service: `d0f3e879-7705-4c51-925a-7177bfe308ec`
+- Frontend service: `e4fb83bf-2b2c-4b89-9c77-895f7603a518`
+
+Use `/check-server` slash command to check Railway deployment status.
+
 ## Documentation Management
 
 We keep all important docs in `./docs` folder and keep updating them, structure like below:
