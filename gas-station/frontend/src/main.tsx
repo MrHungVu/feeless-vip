@@ -26,6 +26,7 @@ const ledgerAdapter = new LedgerAdapter();
 ledgerAdapter.on('error', (error) => {
   console.log('[LedgerAdapter] Error:', error);
   console.log('[LedgerAdapter] Current state:', ledgerAdapter.state);
+  console.log('[LedgerAdapter] Attempting disconnect to reset...');
   // Disconnect to reset state so user can try again
   ledgerAdapter.disconnect().then(() => {
     console.log('[LedgerAdapter] Disconnected, new state:', ledgerAdapter.state);

@@ -81,13 +81,12 @@ export function TopUpForm({ chain }: Props) {
 
   // Custom TRON connect button that properly resets modal state
   const handleTronConnect = async () => {
-    console.log('[handleTronConnect] Button clicked!');
-    console.log('[handleTronConnect] Current state:', {
-      connected: tronWallet.connected,
-      connecting: tronWallet.connecting,
-      walletState: tronWallet.wallet?.adapter?.state,
-      modalVisible: visible
-    });
+    console.log('[handleTronConnect] ========== BUTTON CLICKED ==========');
+    console.log('[handleTronConnect] tronWallet.connected:', tronWallet.connected);
+    console.log('[handleTronConnect] tronWallet.connecting:', tronWallet.connecting);
+    console.log('[handleTronConnect] tronWallet.wallet:', tronWallet.wallet);
+    console.log('[handleTronConnect] tronWallet.wallet?.adapter?.state:', tronWallet.wallet?.adapter?.state);
+    console.log('[handleTronConnect] modalVisible:', visible);
 
     // If we're stuck in "connecting" state, we need to force a disconnect first
     if (tronWallet.connecting) {
