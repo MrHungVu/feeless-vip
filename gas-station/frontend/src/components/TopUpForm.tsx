@@ -26,19 +26,7 @@ export function TopUpForm({ chain }: Props) {
   const stablecoin = chain === 'solana' ? 'USDC' : 'USDT';
   const nativeToken = chain === 'solana' ? 'SOL' : 'TRX';
 
-  // TRON connect with adapter reset to handle denied connections
-  const handleTronConnect = async () => {
-    // Force disconnect first to reset any stuck adapter state
-    if (tronWallet.connecting || tronWallet.wallet?.adapter) {
-      try {
-        await tronWallet.disconnect();
-        await new Promise(resolve => setTimeout(resolve, 100));
-      } catch {
-        // Ignore disconnect errors
-      }
-    }
-    setVisible(true);
-  };
+  const handleTronConnect = () => setVisible(true);
 
   const handleTronDisconnect = async () => {
     try {

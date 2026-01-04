@@ -13,18 +13,7 @@ export function useTronWallet() {
 
   const { setVisible } = useWalletModal();
 
-  const connect = async () => {
-    // Force disconnect first to reset any stuck adapter state
-    // This fixes the issue where denying Ledger access leaves adapter in bad state
-    if (connecting || wallet?.adapter) {
-      try {
-        await walletDisconnect();
-        // Small delay to let state settle
-        await new Promise(resolve => setTimeout(resolve, 100));
-      } catch {
-        // Ignore disconnect errors
-      }
-    }
+  const connect = () => {
     setVisible(true);
   };
 

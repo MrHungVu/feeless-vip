@@ -211,7 +211,7 @@ export function Home() {
 
         {/* Footer */}
         <p className="text-xs text-gray-500 text-center">
-          Supported: TronLink, TrustWallet, Ledger
+          Connect via WalletConnect (TrustWallet, Ledger Live, etc.)
         </p>
       </div>
     </div>
