@@ -7,7 +7,8 @@ COPY frontend/package*.json ./frontend/
 COPY shared/package*.json ./shared/
 RUN npm ci --legacy-peer-deps
 COPY . .
-RUN npm run build:shared && npm run build:frontend
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+RUN npm run build -w shared && npm run build -w frontend
 
 FROM nginx:alpine
 COPY --from=builder /app/frontend/dist /usr/share/nginx/html
