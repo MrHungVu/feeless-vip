@@ -25,12 +25,25 @@ const ledgerAdapter = new LedgerAdapter();
 // Listen for errors and reset adapter state
 ledgerAdapter.on('error', (error) => {
   console.log('[LedgerAdapter] Error:', error);
+  console.log('[LedgerAdapter] Current state:', ledgerAdapter.state);
   // Disconnect to reset state so user can try again
-  ledgerAdapter.disconnect().catch(() => {});
+  ledgerAdapter.disconnect().then(() => {
+    console.log('[LedgerAdapter] Disconnected, new state:', ledgerAdapter.state);
+  }).catch((e) => {
+    console.log('[LedgerAdapter] Disconnect failed:', e, 'state:', ledgerAdapter.state);
+  });
 });
 
 ledgerAdapter.on('stateChanged', (state) => {
-  console.log('[LedgerAdapter] State changed:', state);
+  console.log('[LedgerAdapter] State changed to:', state);
+});
+
+ledgerAdapter.on('connect', () => {
+  console.log('[LedgerAdapter] Connected! Address:', ledgerAdapter.address);
+});
+
+ledgerAdapter.on('disconnect', () => {
+  console.log('[LedgerAdapter] Disconnected event fired');
 });
 
 const tronAdapters = [ledgerAdapter];

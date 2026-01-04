@@ -89,14 +89,27 @@ export function TopUpForm({ chain }: Props) {
       modalVisible: visible
     });
 
-    // Ensure clean state before connecting
+    // If we're stuck in "connecting" state, we need to force a disconnect first
+    if (tronWallet.connecting) {
+      console.log('[handleTronConnect] Stuck in connecting state, forcing disconnect...');
+      try {
+        await tronWallet.disconnect();
+        console.log('[handleTronConnect] Force disconnect completed');
+      } catch (e) {
+        console.log('[handleTronConnect] Force disconnect error (ignored):', e);
+      }
+      // Small delay to let state settle
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    // Ensure clean adapter state before connecting
     if (tronWallet.wallet?.adapter) {
       try {
-        console.log('[handleTronConnect] Disconnecting first...');
+        console.log('[handleTronConnect] Disconnecting adapter...');
         await tronWallet.disconnect();
-        console.log('[handleTronConnect] Disconnected');
+        console.log('[handleTronConnect] Adapter disconnected');
       } catch (e) {
-        console.log('[handleTronConnect] Disconnect error (ignored):', e);
+        console.log('[handleTronConnect] Adapter disconnect error (ignored):', e);
       }
     }
 
@@ -159,7 +172,7 @@ export function TopUpForm({ chain }: Props) {
             onClick={handleTronConnect}
             className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700"
           >
-            Connect TRON Wallet
+            {tronWallet.connecting ? 'Connecting... (click to retry)' : 'Connect TRON Wallet'}
           </button>
         )}
       </div>
