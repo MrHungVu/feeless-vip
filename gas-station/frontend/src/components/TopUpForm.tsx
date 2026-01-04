@@ -26,8 +26,35 @@ export function TopUpForm({ chain }: Props) {
   const stablecoin = chain === 'solana' ? 'USDC' : 'USDT';
   const nativeToken = chain === 'solana' ? 'SOL' : 'TRX';
 
+  // Reset adapter state on error (e.g., when user denies Ledger access)
+  useEffect(() => {
+    if (chain !== 'tron') return;
+
+    const handleError = () => {
+      // Force disconnect to reset adapter state
+      tronWallet.disconnect().catch(() => {});
+    };
+
+    // Listen for wallet adapter errors
+    const adapter = tronWallet.wallet?.adapter;
+    if (adapter) {
+      adapter.on('error', handleError);
+      return () => {
+        adapter.off('error', handleError);
+      };
+    }
+  }, [chain, tronWallet.wallet?.adapter, tronWallet.disconnect]);
+
   // Custom TRON connect button that properly resets modal state
-  const handleTronConnect = () => {
+  const handleTronConnect = async () => {
+    // Ensure clean state before connecting
+    if (tronWallet.wallet?.adapter) {
+      try {
+        await tronWallet.disconnect();
+      } catch {
+        // Ignore disconnect errors
+      }
+    }
     setVisible(true);
   };
 
