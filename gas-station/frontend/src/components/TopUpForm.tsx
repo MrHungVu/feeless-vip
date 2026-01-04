@@ -26,35 +26,77 @@ export function TopUpForm({ chain }: Props) {
   const stablecoin = chain === 'solana' ? 'USDC' : 'USDT';
   const nativeToken = chain === 'solana' ? 'SOL' : 'TRX';
 
+  // Debug: Log wallet state changes
+  useEffect(() => {
+    console.log('[TRON Wallet State]', {
+      connected: tronWallet.connected,
+      connecting: tronWallet.connecting,
+      address: tronWallet.address,
+      wallet: tronWallet.wallet?.adapter?.name,
+      walletState: tronWallet.wallet?.adapter?.state
+    });
+  }, [tronWallet.connected, tronWallet.connecting, tronWallet.address, tronWallet.wallet]);
+
   // Reset adapter state on error (e.g., when user denies Ledger access)
   useEffect(() => {
     if (chain !== 'tron') return;
 
-    const handleError = () => {
+    const handleError = (error: unknown) => {
+      console.log('[TRON Adapter Error]', error);
       // Force disconnect to reset adapter state
-      tronWallet.disconnect().catch(() => {});
+      tronWallet.disconnect().catch((e) => {
+        console.log('[TRON Disconnect Error]', e);
+      });
     };
 
-    // Listen for wallet adapter errors
+    const handleConnect = () => {
+      console.log('[TRON Adapter Connected]');
+    };
+
+    const handleDisconnect = () => {
+      console.log('[TRON Adapter Disconnected]');
+    };
+
+    const handleStateChange = (state: unknown) => {
+      console.log('[TRON Adapter State Change]', state);
+    };
+
+    // Listen for wallet adapter events
     const adapter = tronWallet.wallet?.adapter;
     if (adapter) {
+      console.log('[TRON Adapter] Attaching listeners to:', adapter.name);
       adapter.on('error', handleError);
+      adapter.on('connect', handleConnect);
+      adapter.on('disconnect', handleDisconnect);
+      adapter.on('stateChanged', handleStateChange);
       return () => {
         adapter.off('error', handleError);
+        adapter.off('connect', handleConnect);
+        adapter.off('disconnect', handleDisconnect);
+        adapter.off('stateChanged', handleStateChange);
       };
     }
   }, [chain, tronWallet.wallet?.adapter, tronWallet.disconnect]);
 
   // Custom TRON connect button that properly resets modal state
   const handleTronConnect = async () => {
+    console.log('[handleTronConnect] Called, current state:', {
+      connected: tronWallet.connected,
+      connecting: tronWallet.connecting,
+      walletState: tronWallet.wallet?.adapter?.state
+    });
+
     // Ensure clean state before connecting
     if (tronWallet.wallet?.adapter) {
       try {
+        console.log('[handleTronConnect] Disconnecting first...');
         await tronWallet.disconnect();
-      } catch {
-        // Ignore disconnect errors
+        console.log('[handleTronConnect] Disconnected');
+      } catch (e) {
+        console.log('[handleTronConnect] Disconnect error (ignored):', e);
       }
     }
+    console.log('[handleTronConnect] Opening modal...');
     setVisible(true);
   };
 
