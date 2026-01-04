@@ -15,7 +15,7 @@ export function TopUpForm({ chain }: Props) {
   const [amount, setAmount] = useState('10');
   const solanaWallet = useSolanaWallet();
   const tronWallet = useTronWallet();
-  const { setVisible } = useWalletModal();
+  const { setVisible, visible } = useWalletModal();
 
   const solanaTopUp = useSolanaTopUp();
   const tronTopUp = useTronTopUp();
@@ -33,9 +33,10 @@ export function TopUpForm({ chain }: Props) {
       connecting: tronWallet.connecting,
       address: tronWallet.address,
       wallet: tronWallet.wallet?.adapter?.name,
-      walletState: tronWallet.wallet?.adapter?.state
+      walletState: tronWallet.wallet?.adapter?.state,
+      modalVisible: visible
     });
-  }, [tronWallet.connected, tronWallet.connecting, tronWallet.address, tronWallet.wallet]);
+  }, [tronWallet.connected, tronWallet.connecting, tronWallet.address, tronWallet.wallet, visible]);
 
   // Reset adapter state on error (e.g., when user denies Ledger access)
   useEffect(() => {
@@ -80,10 +81,12 @@ export function TopUpForm({ chain }: Props) {
 
   // Custom TRON connect button that properly resets modal state
   const handleTronConnect = async () => {
-    console.log('[handleTronConnect] Called, current state:', {
+    console.log('[handleTronConnect] Button clicked!');
+    console.log('[handleTronConnect] Current state:', {
       connected: tronWallet.connected,
       connecting: tronWallet.connecting,
-      walletState: tronWallet.wallet?.adapter?.state
+      walletState: tronWallet.wallet?.adapter?.state,
+      modalVisible: visible
     });
 
     // Ensure clean state before connecting
@@ -96,8 +99,10 @@ export function TopUpForm({ chain }: Props) {
         console.log('[handleTronConnect] Disconnect error (ignored):', e);
       }
     }
-    console.log('[handleTronConnect] Opening modal...');
+
+    console.log('[handleTronConnect] Calling setVisible(true)...');
     setVisible(true);
+    console.log('[handleTronConnect] setVisible(true) called');
   };
 
   const handleTronDisconnect = async () => {
