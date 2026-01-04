@@ -28,12 +28,13 @@ const tronAdapters = [
   ...(WALLETCONNECT_PROJECT_ID ? [new WalletConnectAdapter({
     network: 'Mainnet',
     options: {
+      relayUrl: 'wss://relay.walletconnect.com',
       projectId: WALLETCONNECT_PROJECT_ID,
       metadata: {
-        name: 'Gas Station',
+        name: 'Feeless Gas Station',
         description: 'Get TRX without gas fees',
-        url: window.location.origin,
-        icons: [`${window.location.origin}/logo.png`]
+        url: 'https://frontend-production-f263.up.railway.app',
+        icons: ['https://frontend-production-f263.up.railway.app/logo.png']
       }
     }
   })] : [])
