@@ -15,7 +15,7 @@ export function TopUpForm({ chain }: Props) {
   const [amount, setAmount] = useState('10');
   const solanaWallet = useSolanaWallet();
   const tronWallet = useTronWallet();
-  const { setVisible, visible } = useWalletModal();
+  const { setVisible } = useWalletModal();
 
   const solanaTopUp = useSolanaTopUp();
   const tronTopUp = useTronTopUp();
@@ -26,102 +26,25 @@ export function TopUpForm({ chain }: Props) {
   const stablecoin = chain === 'solana' ? 'USDC' : 'USDT';
   const nativeToken = chain === 'solana' ? 'SOL' : 'TRX';
 
-  // Debug: Log wallet state changes
-  useEffect(() => {
-    console.log('[TRON Wallet State]', {
-      connected: tronWallet.connected,
-      connecting: tronWallet.connecting,
-      address: tronWallet.address,
-      wallet: tronWallet.wallet?.adapter?.name,
-      walletState: tronWallet.wallet?.adapter?.state,
-      modalVisible: visible
-    });
-  }, [tronWallet.connected, tronWallet.connecting, tronWallet.address, tronWallet.wallet, visible]);
-
-  // Reset adapter state on error (e.g., when user denies Ledger access)
-  useEffect(() => {
-    if (chain !== 'tron') return;
-
-    const handleError = (error: unknown) => {
-      console.log('[TRON Adapter Error]', error);
-      // Force disconnect to reset adapter state
-      tronWallet.disconnect().catch((e) => {
-        console.log('[TRON Disconnect Error]', e);
-      });
-    };
-
-    const handleConnect = () => {
-      console.log('[TRON Adapter Connected]');
-    };
-
-    const handleDisconnect = () => {
-      console.log('[TRON Adapter Disconnected]');
-    };
-
-    const handleStateChange = (state: unknown) => {
-      console.log('[TRON Adapter State Change]', state);
-    };
-
-    // Listen for wallet adapter events
-    const adapter = tronWallet.wallet?.adapter;
-    if (adapter) {
-      console.log('[TRON Adapter] Attaching listeners to:', adapter.name);
-      adapter.on('error', handleError);
-      adapter.on('connect', handleConnect);
-      adapter.on('disconnect', handleDisconnect);
-      adapter.on('stateChanged', handleStateChange);
-      return () => {
-        adapter.off('error', handleError);
-        adapter.off('connect', handleConnect);
-        adapter.off('disconnect', handleDisconnect);
-        adapter.off('stateChanged', handleStateChange);
-      };
-    }
-  }, [chain, tronWallet.wallet?.adapter, tronWallet.disconnect]);
-
-  // Custom TRON connect button that properly resets modal state
+  // TRON connect with adapter reset to handle denied connections
   const handleTronConnect = async () => {
-    console.log('[handleTronConnect] ========== BUTTON CLICKED ==========');
-    console.log('[handleTronConnect] tronWallet.connected:', tronWallet.connected);
-    console.log('[handleTronConnect] tronWallet.connecting:', tronWallet.connecting);
-    console.log('[handleTronConnect] tronWallet.wallet:', tronWallet.wallet);
-    console.log('[handleTronConnect] tronWallet.wallet?.adapter?.state:', tronWallet.wallet?.adapter?.state);
-    console.log('[handleTronConnect] modalVisible:', visible);
-
-    // If we're stuck in "connecting" state, we need to force a disconnect first
-    if (tronWallet.connecting) {
-      console.log('[handleTronConnect] Stuck in connecting state, forcing disconnect...');
+    // Force disconnect first to reset any stuck adapter state
+    if (tronWallet.connecting || tronWallet.wallet?.adapter) {
       try {
         await tronWallet.disconnect();
-        console.log('[handleTronConnect] Force disconnect completed');
-      } catch (e) {
-        console.log('[handleTronConnect] Force disconnect error (ignored):', e);
-      }
-      // Small delay to let state settle
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-
-    // Ensure clean adapter state before connecting
-    if (tronWallet.wallet?.adapter) {
-      try {
-        console.log('[handleTronConnect] Disconnecting adapter...');
-        await tronWallet.disconnect();
-        console.log('[handleTronConnect] Adapter disconnected');
-      } catch (e) {
-        console.log('[handleTronConnect] Adapter disconnect error (ignored):', e);
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch {
+        // Ignore disconnect errors
       }
     }
-
-    console.log('[handleTronConnect] Calling setVisible(true)...');
     setVisible(true);
-    console.log('[handleTronConnect] setVisible(true) called');
   };
 
   const handleTronDisconnect = async () => {
     try {
       await tronWallet.disconnect();
-    } catch (e) {
-      console.error('Disconnect error:', e);
+    } catch {
+      // Ignore disconnect errors
     }
   };
 
@@ -171,7 +94,7 @@ export function TopUpForm({ chain }: Props) {
             onClick={handleTronConnect}
             className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700"
           >
-            {tronWallet.connecting ? 'Connecting... (click to retry)' : 'Connect TRON Wallet'}
+            {tronWallet.connecting ? 'Connecting...' : 'Connect TRON Wallet'}
           </button>
         )}
       </div>

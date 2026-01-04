@@ -18,35 +18,8 @@ import '@tronweb3/tronwallet-adapter-react-ui/style.css';
 const solanaEndpoint = import.meta.env.VITE_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
 const solanaWallets = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
 
-// Ledger only for now (testing)
-// Create adapter and attach error handler to auto-disconnect on error
+// TRON wallet adapters - Ledger only for now
 const ledgerAdapter = new LedgerAdapter();
-
-// Listen for errors and reset adapter state
-ledgerAdapter.on('error', (error) => {
-  console.log('[LedgerAdapter] Error:', error);
-  console.log('[LedgerAdapter] Current state:', ledgerAdapter.state);
-  console.log('[LedgerAdapter] Attempting disconnect to reset...');
-  // Disconnect to reset state so user can try again
-  ledgerAdapter.disconnect().then(() => {
-    console.log('[LedgerAdapter] Disconnected, new state:', ledgerAdapter.state);
-  }).catch((e) => {
-    console.log('[LedgerAdapter] Disconnect failed:', e, 'state:', ledgerAdapter.state);
-  });
-});
-
-ledgerAdapter.on('stateChanged', (state) => {
-  console.log('[LedgerAdapter] State changed to:', state);
-});
-
-ledgerAdapter.on('connect', () => {
-  console.log('[LedgerAdapter] Connected! Address:', ledgerAdapter.address);
-});
-
-ledgerAdapter.on('disconnect', () => {
-  console.log('[LedgerAdapter] Disconnected event fired');
-});
-
 const tronAdapters = [ledgerAdapter];
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
