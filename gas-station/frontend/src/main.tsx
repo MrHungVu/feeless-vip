@@ -12,7 +12,7 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 // TRON
 import { WalletProvider as TronWalletProvider } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { WalletModalProvider as TronModalProvider } from '@tronweb3/tronwallet-adapter-react-ui';
-import { TronLinkAdapter } from '@tronweb3/tronwallet-adapters';
+import { TronLinkAdapter, LedgerAdapter } from '@tronweb3/tronwallet-adapters';
 import { WalletConnectAdapter } from '@tronweb3/tronwallet-adapter-walletconnect';
 import '@tronweb3/tronwallet-adapter-react-ui/style.css';
 
@@ -25,6 +25,7 @@ const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 
 const tronAdapters = [
   new TronLinkAdapter(),
+  new LedgerAdapter(),
   ...(WALLETCONNECT_PROJECT_ID ? [new WalletConnectAdapter({
     network: 'Mainnet',
     options: {
