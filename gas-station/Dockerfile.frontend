@@ -1,5 +1,5 @@
-FROM node:20-alpine AS builder
-RUN apk add --no-cache python3 make g++ linux-headers eudev-dev
+FROM node:20 AS builder
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY package*.json ./
 COPY backend/package*.json ./backend/
@@ -7,7 +7,7 @@ COPY frontend/package*.json ./frontend/
 COPY shared/package*.json ./shared/
 RUN npm ci --legacy-peer-deps
 COPY . .
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 RUN npm run build -w shared && npm run build -w frontend
 
 FROM nginx:alpine
