@@ -49,7 +49,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ConnectionProvider endpoint={solanaEndpoint}>
       <WalletProvider wallets={solanaWallets} autoConnect>
         <WalletModalProvider>
-          <TronWalletProvider adapters={tronAdapters} autoConnect={false}>
+          <TronWalletProvider adapters={tronAdapters} autoConnect disableAutoConnectOnLoad>
             <TronModalProvider>
               <App />
             </TronModalProvider>

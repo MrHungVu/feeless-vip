@@ -16,6 +16,7 @@
     "@solana/wallet-adapter-react-ui": "^0.9.35",
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "^1.98.0",
+    "@tronweb3/tronwallet-adapter-ledger": "^1.1.11",
     "@tronweb3/tronwallet-adapter-react-hooks": "^1.1.6",
     "@tronweb3/tronwallet-adapter-react-ui": "^1.1.8",
     "@tronweb3/tronwallet-adapter-walletconnect": "^3.0.1",
