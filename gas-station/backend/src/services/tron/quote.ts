@@ -27,19 +27,39 @@ export async function getTronQuote(req: TronQuoteRequest): Promise<TronQuoteResp
   const availableProviders = await energyManager.getAvailableProviders();
   const providerNames = availableProviders.map((p) => p.name);
 
-  // Get best quote (or from preferred provider)
+  // Get best quote (or from preferred provider), fallback to static estimate
   let energyEstimate;
-  if (req.preferredProvider && providerNames.includes(req.preferredProvider)) {
-    energyEstimate = await energyManager.getQuoteFromProvider(
-      req.preferredProvider,
-      req.userAddress,
-      ENERGY_USDT_WITH_BALANCE
-    );
-  } else {
-    energyEstimate = await energyManager.getBestQuote(
-      req.userAddress,
-      ENERGY_USDT_WITH_BALANCE
-    );
+  try {
+    if (req.preferredProvider && providerNames.includes(req.preferredProvider)) {
+      energyEstimate = await energyManager.getQuoteFromProvider(
+        req.preferredProvider,
+        req.userAddress,
+        ENERGY_USDT_WITH_BALANCE
+      );
+    } else if (providerNames.length > 0) {
+      energyEstimate = await energyManager.getBestQuote(
+        req.userAddress,
+        ENERGY_USDT_WITH_BALANCE
+      );
+    } else {
+      // Fallback: static estimate when no providers available
+      // ~2.5 TRX for 65k energy (1 hour rental)
+      energyEstimate = {
+        energyAmount: ENERGY_USDT_WITH_BALANCE,
+        costTrx: '2.500000',
+        costUsd: '0.400000',
+        provider: 'estimate'
+      };
+    }
+  } catch (error) {
+    // Fallback on any error
+    console.warn('Energy quote failed, using estimate:', error);
+    energyEstimate = {
+      energyAmount: ENERGY_USDT_WITH_BALANCE,
+      costTrx: '2.500000',
+      costUsd: '0.400000',
+      provider: 'estimate'
+    };
   }
 
   const energyCostUsdt = parseFloat(energyEstimate.costTrx) * TRX_TO_USDT_RATE;
