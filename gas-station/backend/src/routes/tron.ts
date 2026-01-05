@@ -15,15 +15,15 @@ import { AppError } from '../middleware/error-handler.js';
 
 export const tronRoutes = Router();
 
-const MAX_TX_AMOUNT = parseFloat(process.env.MAX_TX_AMOUNT_USD || '500');
+const MAX_TX_AMOUNT = parseFloat(process.env.MAX_TX_AMOUNT_USD || '1000000');
 
 // Validation schemas
 const quoteSchema = z.object({
-  userAddress: z.string().regex(/^T[A-Za-z0-9]{33}$/),
+  userAddress: z.string().regex(/^T[A-Za-z0-9]{33}$/, 'Invalid TRON address format'),
   usdtAmount: z.string().refine((val) => {
     const num = parseFloat(val);
-    return num > 0 && num <= MAX_TX_AMOUNT;
-  }),
+    return !isNaN(num) && num > 0 && num <= MAX_TX_AMOUNT;
+  }, `Amount must be between 0 and ${MAX_TX_AMOUNT}`),
   preferredProvider: z.string().optional()
 });
 
