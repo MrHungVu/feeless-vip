@@ -16,7 +16,7 @@ import { healthRoutes } from './routes/health.js';
 import { adminRoutes } from './routes/admin.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { rateLimiter } from './middleware/rate-limiter.js';
-import { initDb, ensureRateLimitTable } from './db/init.js';
+import { initDb } from './db/init.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -40,9 +40,7 @@ async function start() {
   try {
     await initDb();
   } catch (error) {
-    console.warn('Full DB init failed, ensuring critical tables:', (error as Error).message);
-    // Fallback: ensure at least the rate_limits table exists
-    await ensureRateLimitTable();
+    console.error('DB init failed:', (error as Error).message);
   }
 
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
