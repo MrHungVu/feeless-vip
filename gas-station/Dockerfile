@@ -1,4 +1,5 @@
 FROM node:20-alpine
+# Cache bust: 2026-01-05
 RUN apk add --no-cache python3 make g++ linux-headers eudev-dev
 WORKDIR /app
 COPY package*.json ./
