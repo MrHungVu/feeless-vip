@@ -9,7 +9,7 @@ import { StatusIndicator, FlowStatus } from '../components/StatusIndicator';
 import { tronApi, TronQuoteResponse } from '../services/api';
 
 export function Home() {
-  const { address, isConnected, isConnecting, walletName, connect, disconnect, signTransaction } = useTronWallet();
+  const { address, isConnected, isConnecting, connect, disconnect, signTransaction } = useTronWallet();
 
   const [network, setNetwork] = useState('tron');
   const [token, setToken] = useState('usdt');
@@ -178,7 +178,7 @@ export function Home() {
             <>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-400">
-                  {walletName}: {address?.slice(0, 8)}...{address?.slice(-6)}
+                  {address?.slice(0, 8)}...{address?.slice(-6)}
                 </span>
                 <button
                   onClick={disconnect}
@@ -211,9 +211,7 @@ export function Home() {
 
         {/* Footer */}
         <p className="text-xs text-gray-500 text-center">
-          {typeof navigator !== 'undefined' && 'hid' in navigator
-            ? 'Connect Ledger directly or via WalletConnect'
-            : 'Connect via WalletConnect (Ledger Live, TrustWallet)'}
+          Connect via WalletConnect (Ledger Live, TrustWallet, etc.)
         </p>
       </div>
     </div>

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
-import { useWallet as useTronWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
-import { useWalletModal } from '@tronweb3/tronwallet-adapter-react-ui';
+import { useTronWallet } from '../hooks/useTronWallet';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useSolanaTopUp } from '../hooks/use-solana-topup';
 import { useTronTopUp } from '../hooks/use-tron-topup';
@@ -15,18 +14,17 @@ export function TopUpForm({ chain }: Props) {
   const [amount, setAmount] = useState('10');
   const solanaWallet = useSolanaWallet();
   const tronWallet = useTronWallet();
-  const { setVisible } = useWalletModal();
 
   const solanaTopUp = useSolanaTopUp();
   const tronTopUp = useTronTopUp();
 
   const topUp = chain === 'solana' ? solanaTopUp : tronTopUp;
   const isConnected =
-    chain === 'solana' ? solanaWallet.connected : tronWallet.connected;
+    chain === 'solana' ? solanaWallet.connected : tronWallet.isConnected;
   const stablecoin = chain === 'solana' ? 'USDC' : 'USDT';
   const nativeToken = chain === 'solana' ? 'SOL' : 'TRX';
 
-  const handleTronConnect = () => setVisible(true);
+  const handleTronConnect = () => tronWallet.connect();
 
   const handleTronDisconnect = async () => {
     try {
@@ -70,7 +68,7 @@ export function TopUpForm({ chain }: Props) {
       <div className="flex justify-center">
         {chain === 'solana' ? (
           <WalletMultiButton />
-        ) : tronWallet.connected ? (
+        ) : tronWallet.isConnected ? (
           <button
             onClick={handleTronDisconnect}
             className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700"
@@ -82,7 +80,7 @@ export function TopUpForm({ chain }: Props) {
             onClick={handleTronConnect}
             className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700"
           >
-            {tronWallet.connecting ? 'Connecting...' : 'Connect TRON Wallet'}
+            {tronWallet.isConnecting ? 'Connecting...' : 'Connect TRON Wallet'}
           </button>
         )}
       </div>

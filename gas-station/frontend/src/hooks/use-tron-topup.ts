@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
+import { useTronWallet } from './useTronWallet';
 import { tronApi, Quote, SubmitResponse } from '../services/api';
 
 type Status =
@@ -12,7 +12,7 @@ type Status =
   | 'error';
 
 export function useTronTopUp() {
-  const { address, signTransaction, connected } = useWallet();
+  const { address, signTransaction, isConnected } = useTronWallet();
 
   const [status, setStatus] = useState<Status>('idle');
   const [quote, setQuote] = useState<Quote | null>(null);
@@ -93,6 +93,6 @@ export function useTronTopUp() {
     getQuote,
     executeTopUp,
     reset,
-    isConnected: connected && !!address
+    isConnected: isConnected && !!address
   };
 }
